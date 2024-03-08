@@ -1,0 +1,48 @@
+
+.app {
+  display: flex;
+  border: 1px solid #000;
+}
+
+.file-list {
+  width: 300px;
+  background-color: #fff;
+  padding: 10px;
+  overflow-y: auto;
+  overflow-x: visible;
+}
+
+.file-item {
+  padding: 5px;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.file-item.selected {
+  border: 1px solid #000;
+  background-color: rgb(248, 248, 255);
+  position: relative;
+}
+
+.file-content {
+  flex: 1;
+  overflow: hidden;
+  border-left: 1px solid #000;
+}
+
+pre {
+  margin: 0;
+  padding: 10px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.app-desc {
+  padding: 10px;
+  background-color: #fff;
+  border-top: 1px solid #000;
+  text-align: center;
+}
+
+button.generate {
+}
