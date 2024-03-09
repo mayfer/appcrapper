@@ -31,6 +31,11 @@ export default function getCredentials(namespace: String, key: string): string |
     } else {
         // create credentials file
         console.warn("** Auto-creating missing credentials file, please edit:", filename);
+
+        const folder = path.dirname(filename);
+        if(!fs.existsSync(folder)) {
+            fs.mkdirSync(folder, { recursive: true });
+        }
         fs.writeFileSync(filename, JSON.stringify({key: ""}, null, 4));
 
         return undefined;
