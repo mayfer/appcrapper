@@ -15,6 +15,7 @@ async function createAndDownloadZip(files: { [key: string]: string }): Promise<v
 
   // Iterate over the object, adding files to the zip archive
   Object.entries(files).forEach(([path, content]) => {
+    content = content.replace(/\/\* FINISHED \*\//gm, '');
     zip.file(path, content);
   });
 

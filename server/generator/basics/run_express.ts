@@ -45,6 +45,7 @@ server.listen(port, () => {
 
     const folder: string = path.join(__dirname, '../');
     const client_entry = fs.existsSync(path.join(folder, 'client/index.tsx')) ? 'client/index.tsx' : 'client/index.ts';
+    fs.mkdirSync(path.join(folder, 'dist'), { recursive: true });
     const result = await esbuild.build({
         entryPoints: [path.join(folder, client_entry)],
         outdir: path.join(folder, 'dist'),

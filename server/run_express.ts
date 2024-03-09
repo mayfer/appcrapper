@@ -15,7 +15,15 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
+    res.send(`<!doctype html>
+    <html>
+      <link rel="stylesheet" href="/dist/index.css" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <script type="module">
+        import '/dist/index.js';
+      </script>
+      <div id="root"></div>
+    </html>`);
 });
 
 // serve static files

@@ -21,7 +21,7 @@ export async function stream(prompt: Prompt, streamHandler?: (stream: any, text:
         max_tokens: 4096,
         stream: true,
         temperature: 0,
-        stop_sequences: ['/* END_FILE', '/* END_APP', '/* FINISHED'],
+        stop_sequences: ['/* END_FILE', '/* END_APP', ],
     })
 
     /*
@@ -82,7 +82,7 @@ data: {"type": "message_stop"}
 
         if (streamHandler && text_delta) {
             streamHandler(stream, text_delta);
-            process.stdout.write(text_delta);
+            // process.stdout.write(text_delta);
         }
     }
     return { text, input_tokens, output_tokens } as Completion;
