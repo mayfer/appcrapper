@@ -4,6 +4,8 @@ import { Server } from "socket.io";
 import express from "express";
 import cookieParser from "cookie-parser";
 import path from "path";
+import esbuild from 'esbuild';
+import fs from 'fs';
 
 export const app = express();
 export const server = http.createServer(app);
@@ -41,3 +43,66 @@ const port = process.env.PORT || 8000;
 server.listen(port, () => {
     console.log('Server is running on port ' + port);
 });
+
+
+
+
+(async () => {
+
+    const folder: string = path.join(__dirname, '../');
+    const client_entry = fs.existsSync(path.join(folder, 'client/index.tsx')) ? 'client/index.tsx' : 'client/index.ts';
+    const result = await esbuild.build({
+        entryPoints: [path.join(folder, client_entry)],
+        outdir: path.join(folder, 'dist'),
+        bundle: true, // Assuming you want to bundle
+    });
+
+    // watch for changes in the client folder
+    // using fs tools
+    fs.watch(path.join(folder, 'client'), { recursive: true }, async (event, filename) => {
+
+        // const result = await esbuild.build({
+        //     entryPoints: [path.join(folder, client_entry)],
+        //     outdir: path.join(folder, 'dist'),
+        //     bundle: true, // Assuming you want to bundle
+        // });
+    });
+
+    if(result.errors.length > 0) {
+        console.error(result.errors);
+        return;
+    }
+    if(!result.outputFiles) {
+        console.error('No output files');
+        return;
+    }
+
+    // Assuming 'result.outputFiles' is what you want to map, following the esbuild 'write: false' behavior
+    const files = result.outputFiles.map(output => {
+        const basename: string = path.basename(output.path);
+        const ext: string = path.extname(basename).slice(1);
+
+        return {
+            path: output.path,
+            basename,
+            extension: ext,
+        };
+    });
+
+
+    const index_html_content = `<!doctype html>
+    <html>
+      ${files.filter(f => f.extension == 'css').map(f => `
+      <link rel="stylesheet" href="/dist/${f.basename}" />
+      `.trim()).join('\n')}
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <script type="module">
+        ${files.filter(f => f.extension == 'js').map(f => `import '/dist/${f.basename}';`).join('\n')}
+      </script>
+      <div id="root"></div>
+    </html>`;
+
+
+    await Bun.write(folder + '/server/index.html', index_html_content);
+
+})();

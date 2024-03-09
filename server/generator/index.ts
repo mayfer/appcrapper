@@ -1,29 +1,8 @@
 import { stream } from './claude';
 import { Prompt, Line } from './interfaces';
 import generator from './file_saver';
-// import yargs, { Arguments } from 'yargs';
-// import { hideBin } from 'yargs/helpers';
 import path from 'path';
-
-// interface CommandLineArgs {
-//   name?: string; // Using '?' to indicate that the property is optional
-// }
-
-// const argv: Arguments<CommandLineArgs> = yargs(hideBin(process.argv))
-//   .option('desc', {
-//     type: 'string',
-//     default: null, // default to null if not provided
-//     describe: 'App description',
-//   })
-//   .parseSync(); // Note: Using parseSync() here for synchronous parsing
-
-
-// // yargs --desc
-// const app_desc = argv.desc;
-// if (!app_desc) {
-//   console.error('Please provide a description for the app using --desc flag');
-//   process.exit(1);
-// }
+import fs from 'fs';
 
 
 export default async function generate(app_desc: string, streamFileHandler: (stream: any, filename: string, text: string) => void) {
@@ -46,7 +25,7 @@ Please generate the following app: ${app_desc}
 - If there are no more files to write, mark it with /* END_APP */
 - Make sure all files are implemented.
 - Include a README file that has installation/running instructions
-- At the very end, generate a package.json file with all used libraries for both server and client. Don't specify version numbers, just use the latest version.
+- At the very end, generate a package.json file with all used libraries for both server and client. Don't specify version numbers, just use the latest version. Do NOT generate tsconfig.json.
 
 For this project, you will generate both backend and frontend code, both in TypeScript.
 The backend will use Node.js in Typescript + sqlite for database (sqlite3 library), and the frontend will use React 18. The server should create all necessary database tables and handle all database operations.
@@ -84,7 +63,7 @@ ${run_express_file}
 
   console.log(`Generating app ${appname}...`);
 
-  streamFileHandler(null, 'run_express.ts', run_express_file);
+  streamFileHandler(null, 'server/run_express.ts', run_express_file);
 
   // cp run_express.ts to generated_apps/<appname>/server/run_express.ts
 
@@ -154,8 +133,9 @@ app.get("/robots.txt", (req, res) => {
 
   await Bun.write('generated_apps/' + appname + '/server/run_express.ts', run_express_file);
   const folder = path.join(__dirname, '../../generated_apps/', appname);
+  const client_entry = fs.existsSync(path.join(folder, 'client/index.tsx')) ? 'client/index.tsx' : 'client/index.ts';
   const build = await Bun.build({
-    entrypoints: [path.join(folder, 'client/index.tsx')],
+    entrypoints: [path.join(folder, client_entry)],
     outdir: path.join(folder, 'dist/'),
   });
 
