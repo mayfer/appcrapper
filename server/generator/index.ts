@@ -9,6 +9,8 @@ export default async function generate(app_desc: string, streamFileHandler: (str
 
   const run_express_file = await Bun.file(__dirname + '/basics/run_express.ts').text();
 
+  const run_express_file_prompt = run_express_file.split('/* PROMPT_IGNORE */')[0];
+
   const prompt: Prompt = {
     lines: [
       {
@@ -45,7 +47,7 @@ The app should be ready to run, complete with all functionality.
 The server is already running on port 8000 with express and socket.io.
 /* FILE: ./server/run_express.ts */
 
-${run_express_file}
+${run_express_file_prompt}
 
 /* END_FILE */
 

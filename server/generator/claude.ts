@@ -21,7 +21,7 @@ export async function stream(prompt: Prompt, streamHandler?: (stream: any, text:
         max_tokens: 4096,
         stream: true,
         temperature: 0,
-        stop_sequences: ['/* END_FILE', '/* END_APP'],
+        stop_sequences: ['/* END_FILE', '/* END_APP', '/* FINISHED'],
     })
 
     /*

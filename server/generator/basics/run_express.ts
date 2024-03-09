@@ -18,9 +18,7 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 
-// serve static files
 app.get('/client/:file', (req, res) => {
-    // res.sendFile(__dirname + '../client/' + req.params.file);
     const filepath = path.join(__dirname, '../client', req.params.file);
     try {
         res.sendFile(filepath);
@@ -29,7 +27,6 @@ app.get('/client/:file', (req, res) => {
     }
 })
 app.get('/dist/:file', (req, res) => {
-    // res.sendFile(__dirname + '../client/' + req.params.file);
     const filepath = path.join(__dirname, '../dist', req.params.file);
     try {
         res.sendFile(filepath);
@@ -38,15 +35,12 @@ app.get('/dist/:file', (req, res) => {
     }
 })
 
-
 const port = process.env.PORT || 8000;
 server.listen(port, () => {
     console.log('Server is running on port ' + port);
 });
 
-
-
-
+/* PROMPT_IGNORE */
 (async () => {
 
     const folder: string = path.join(__dirname, '../');
@@ -55,6 +49,7 @@ server.listen(port, () => {
         entryPoints: [path.join(folder, client_entry)],
         outdir: path.join(folder, 'dist'),
         bundle: true,
+        write: false,
     });
 
     fs.watch(path.join(folder, 'client'), { recursive: true }, async (event, filename) => {
@@ -69,12 +64,19 @@ server.listen(port, () => {
         const basename: string = path.basename(output.path);
         const ext: string = path.extname(basename).slice(1);
 
+        const filePath = path.join(folder, 'dist', path.basename(output.path));
+        fs.writeFileSync(filePath, output.contents);
+
         return {
             path: output.path,
             basename,
             extension: ext,
         };
     }) : [];
+
+    if(files.length == 0) {
+        console.error('Failed to build client', client_entry, result);
+    }
 
 
     const index_html_content = `<!doctype html>
