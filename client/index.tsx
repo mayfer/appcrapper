@@ -135,7 +135,7 @@ function App() {
                   <ul>
                     <li>Unzip the file</li>
                     <li>Install <a href="https://bun.sh/" target="_blank">bun</a></li>
-                    <li>Run "bun i && bun --watch server/index.ts"</li>
+                    <li>Run <code>bun i && bun --watch server/index.ts</code> from the folder</li>
                     <li>Open <a href="http://localhost:8000" target="_blank">http://localhost:8000</a></li>
                   </ul>
                 </div>
