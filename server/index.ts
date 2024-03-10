@@ -56,6 +56,7 @@ io.on('connection', (socket) => {
   // });
 
   socket.on('generate', async ({app_desc} : {app_desc: string}) => {
+    return;
     console.log('generate', app_desc);
 
     await generate(app_desc, (stream: any, filename: string, text: string, replace?: boolean) => {

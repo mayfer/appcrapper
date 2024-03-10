@@ -38,6 +38,8 @@ function App() {
   const [manuallyClickedFile, setManuallyClickedFile] = useState<boolean>(false);
   const [done, setDone] = useState<boolean>(false);
   const [inProgress, setInProgress] = useState<boolean>(false);
+  const [email, setEmail] = useState<string>('murat@ayfer.net');
+  const [emailSent, setEmailSent] = useState<boolean>(true);
 
   const manuallyClickedFileRef = useRef(manuallyClickedFile);
 
@@ -110,6 +112,7 @@ function App() {
           <textarea
             placeholder="Enter app description"
             className="app-desc"
+            disabled
             onChange={(e) => {
               setAppDesc(e.target.value);
             }}
@@ -117,6 +120,7 @@ function App() {
           {!inProgress && !done && (
             <button
               className="generate"
+              disabled
               onClick={() => {
                 socket.emit('generate', { app_desc: appDesc });
                 setInProgress(true);
@@ -126,6 +130,43 @@ function App() {
             </button>
           )}
         </div>
+      </div>
+
+      <div className="wait-list">
+
+        {!emailSent && (
+          <div>
+            <p style={{ fontStyle: 'italic' }}>Enter your email to get notified when< br /> AppCrapper launches in the next few days.
+            </p>
+            <input className="enter-email" type="email" placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
+            <button className="submit-email" onClick={() => {
+              fetch('/api/joinWaitlist', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email }),
+              })
+                .then(() => {
+
+                  setEmailSent(true);
+                })
+                .catch((err) => {
+                  alert('Error submitting email:', err);
+                });
+              setEmail('');
+            }}>Join waitlist</button>
+
+            <img src="/client/depressed.svg" style={{ height: '50px', marginTop: '20px', }} alt="depressed" />
+          </div>
+        )}
+
+        {emailSent && (
+          <div>
+            <p style={{ fontStyle: 'italic' }}>OK you are on the waitlist, {email}.</p>
+            <img src="/client/carrot.svg" style={{ height: '250px', marginTop: '20px', }} alt="happy" />
+          </div>
+        )}
       </div>
       
       {(inProgress || done) && (

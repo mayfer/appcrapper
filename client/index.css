@@ -103,9 +103,48 @@ button:focus {
     outline: none;
 }
 
+textarea:disabled {
+  background-color: #ccc;
+  color: #aaa;
+  opacity: 1;
+}
+button:disabled {
+  background-color: #000;
+  color: #aaa;
+  opacity: 1;
+}
+
 .done code {
   font-family: monospace;
   background-color: #eee;
   padding: 2px 4px;
 ;
+}
+
+.wait-list {
+  padding-top: 100px;
+  margin-top: 100px;
+  border-top: 1px solid #000;
+  text-align: center;
+  font-size: 25px;
+}
+
+input.enter-email {
+
+  padding: 10px;
+  background-color: #fff;
+  border-top: 1px solid #000;
+  text-align: center;
+  border: 10px solid #000;
+  font-size: 16px;
+}
+
+button.submit-email {
+  display: block;
+  margin: 0 auto;
+  font-size: 20px;
+  padding: 10px 20px;
+  background-color: #000;
+  color: #fff;
+  border: none;
 }
