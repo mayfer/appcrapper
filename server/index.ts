@@ -4,7 +4,12 @@ import path from 'path';
 import { app, io } from './run_express';
 import { FileInfo, FileChunk } from '../shared/types';
 import generate from './generator';
+import { addToWaitlist } from './db';
 
+app.post('/api/joinWaitlist', (req, res) => {
+  addToWaitlist(req.body.email);
+  res.send('OK');
+});
 
 const filesDir = path.join(__dirname, '../generated_apps/app-w90fgo/');
 function getFileInfos(dir: string): FileInfo[] {

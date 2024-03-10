@@ -38,8 +38,8 @@ function App() {
   const [manuallyClickedFile, setManuallyClickedFile] = useState<boolean>(false);
   const [done, setDone] = useState<boolean>(false);
   const [inProgress, setInProgress] = useState<boolean>(false);
-  const [email, setEmail] = useState<string>('murat@ayfer.net');
-  const [emailSent, setEmailSent] = useState<boolean>(true);
+  const [email, setEmail] = useState<string>('');
+  const [emailSent, setEmailSent] = useState<boolean>(false);
 
   const manuallyClickedFileRef = useRef(manuallyClickedFile);
 
