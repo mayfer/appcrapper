@@ -109,7 +109,7 @@ ${run_express_file_prompt}
         content: `OK. print next file, if any. You can say /* FINISHED */ when done.`,
       });
 
-      if (response.stopSequence?.includes('/* FINISHED')) {
+      if (response.stopSequence?.includes('/* FINISHED') || response.stopSequence?.includes('/* END_APP */')) {
         running = false;
       }
       file_saver(appname, response.text);
@@ -131,7 +131,7 @@ ${run_express_file_prompt}
       package_json.dependencies['express'] = 'latest';
       
       generated_files['package.json'] = JSON.stringify(package_json, null, 4);
-      streamFileHandler(null, 'package.json', generated_files['package.json']);
+      streamFileHandler(null, 'package.json', generated_files['package.json'], true);
       console.log('package.json updated');
       console.log(generated_files['package.json']);
     } catch (e) {

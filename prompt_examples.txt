@@ -1,2 +1,4 @@
 an infinite canvas note taking app, where user can place a textbox and write in it right away. textbox size should be result of click, drag, release. there should be plus and minus buttons to zoom in and out of the entire canvas. creating or editing a note saves it into the database
 
+a top-down, isometric three.js game world where the player can walk on a 2d plane using arrow keys (also support diagonals when two arrows are pressed)
+
