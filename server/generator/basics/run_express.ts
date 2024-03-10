@@ -17,30 +17,22 @@ app.use(cookieParser());
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
-
 app.get('/client/:file', (req, res) => {
     const filepath = path.join(__dirname, '../client', req.params.file);
-    try {
-        res.sendFile(filepath);
-    } catch (e) {
-        res.send("");
-    }
+    res.sendFile(filepath);
 })
 app.get('/dist/:file', (req, res) => {
     const filepath = path.join(__dirname, '../dist', req.params.file);
-    try {
-        res.sendFile(filepath);
-    } catch (e) {
-        res.send("");
-    }
+    res.sendFile(filepath);
 })
 
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 8001;
 server.listen(port, () => {
     console.log('Server is running on port ' + port);
 });
 
 /* PROMPT_IGNORE */
+
 (async () => {
 
     const folder: string = path.join(__dirname, '../');

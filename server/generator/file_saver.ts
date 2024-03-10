@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 
-export default async function generator(appname: string, source: string) {
+export default async function file_saver(appname: string, source: string) {
     if(source.includes('/* FILE: ')) {
         const data = source;
 

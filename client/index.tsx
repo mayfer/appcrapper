@@ -48,11 +48,22 @@ function App() {
 
   useEffect(() => {
     socket.on('file-chunk', (fileChunk: FileChunk) => {
-      console.log('file-chunk', fileChunk);
       const filename = fileChunk.relativePath;
       setFiles((prevFiles) => ({
         ...prevFiles,
         [filename]: (prevFiles[filename] || '') + fileChunk.chunk,
+      }));
+
+      if(!manuallyClickedFileRef.current) {
+        setSelectedFile(filename);
+      }
+    });
+
+    socket.on('file-full', (fileChunk: FileChunk) => {
+      const filename = fileChunk.relativePath;
+      setFiles((prevFiles) => ({
+        ...prevFiles,
+        [filename]: fileChunk.chunk,
       }));
 
       if(!manuallyClickedFileRef.current) {
@@ -103,15 +114,17 @@ function App() {
               setAppDesc(e.target.value);
             }}
           ></textarea>
-          <button
-            className="generate"
-            onClick={() => {
-              socket.emit('generate', { app_desc: appDesc });
-              setInProgress(true);
-            }}
-          >
-            Generate
-          </button>
+          {!inProgress && !done && (
+            <button
+              className="generate"
+              onClick={() => {
+                socket.emit('generate', { app_desc: appDesc });
+                setInProgress(true);
+              }}
+            >
+              Generate
+            </button>
+          )}
         </div>
       </div>
       

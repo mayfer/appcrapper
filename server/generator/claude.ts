@@ -10,7 +10,7 @@ const anthropic = new Anthropic({
 
 
 
-export async function stream(prompt: Prompt, streamHandler?: (stream: any, text: string) => void) : Promise<Completion> {
+export async function stream(prompt: Prompt, streamHandler?: (stream: any, text: string, stopSequence?: string) => void) : Promise<Completion> {
     const messages: Anthropic.MessageParam[] = prompt.lines as Anthropic.MessageParam[];
 
     //stream.controller.abort()
@@ -21,7 +21,7 @@ export async function stream(prompt: Prompt, streamHandler?: (stream: any, text:
         max_tokens: 4096,
         stream: true,
         temperature: 0,
-        stop_sequences: ['/* END_FILE', '/* END_APP', ],
+        stop_sequences: ['/* END_FILE */', '/* END_APP */', '/* FINISHED */', ],
     })
 
     /*
@@ -56,6 +56,8 @@ data: {"type": "message_stop"}
     let input_tokens = 0;
     let output_tokens = 0;
     let text = '';
+    let stopSequence: string | undefined;
+
     for await (const messageStreamEvent of stream) {
         const { type } = messageStreamEvent;
         // console.log(messageStreamEvent);
@@ -73,6 +75,7 @@ data: {"type": "message_stop"}
             output_tokens += messageStreamEvent.usage.output_tokens;
             if(messageStreamEvent.delta.stop_reason === 'stop_sequence') {
                 // console.log('stop sequence', messageStreamEvent.delta.stop_sequence);
+                stopSequence = messageStreamEvent.delta.stop_sequence || undefined;
             }
         } else if (type === 'content_block_start') {
             text_delta = messageStreamEvent.content_block.text;
@@ -80,11 +83,11 @@ data: {"type": "message_stop"}
             const content_type = messageStreamEvent.content_block.type;
         }
 
-        if (streamHandler && text_delta) {
-            streamHandler(stream, text_delta);
+        if (streamHandler && (text_delta || stopSequence)) {
+            streamHandler(stream, text_delta, stopSequence);
             // process.stdout.write(text_delta);
         }
     }
-    return { text, input_tokens, output_tokens } as Completion;
+    return { text, input_tokens, output_tokens, stopSequence } as Completion;
 };
 

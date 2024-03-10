@@ -17,4 +17,5 @@ export interface Completion {
   text: string;
   input_tokens: number;
   output_tokens: number;
+  stopSequence: string | undefined;
 }

@@ -58,13 +58,17 @@ io.on('connection', (socket) => {
   socket.on('generate', async ({app_desc} : {app_desc: string}) => {
     console.log('generate', app_desc);
 
-    await generate(app_desc, (stream: any, filename: string, text: string) => {
+    await generate(app_desc, (stream: any, filename: string, text: string, replace?: boolean) => {
       const fileChunk: FileChunk = {
         // path: filename,
         relativePath: filename,
         chunk: text,
       };
-      socket.emit('file-chunk', fileChunk);
+      if(replace) {
+        socket.emit('file-full', fileChunk);
+      } else {
+        socket.emit('file-chunk', fileChunk);
+      }
     });
 
     socket.emit('done');

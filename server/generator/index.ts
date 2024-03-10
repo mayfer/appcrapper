@@ -1,11 +1,11 @@
 import { stream } from './claude';
 import { Prompt, Line } from './interfaces';
-import generator from './file_saver';
+import file_saver from './file_saver';
 import path from 'path';
 import fs from 'fs';
 
 
-export default async function generate(app_desc: string, streamFileHandler: (stream: any, filename: string, text: string) => void) {
+export default async function generate(app_desc: string, streamFileHandler: (stream: any, filename: string, text: string, replace?: boolean) => void) {
 
   const run_express_file = await Bun.file(__dirname + '/basics/run_express.ts').text();
 
@@ -65,16 +65,15 @@ ${run_express_file_prompt}
 
   console.log(`Generating app ${appname}...`);
 
-  streamFileHandler(null, 'server/run_express.ts', run_express_file);
-
   // cp run_express.ts to generated_apps/<appname>/server/run_express.ts
 
   const generated_files: { [path: string]: string } = {};
 
   while (running) {
     let response_so_far = '';
+    let file_content_so_far = '';
     let current_file: string | null = null;
-    const streamHandler = (stream: any, text: string) => {
+    const streamHandler = (stream: any, text: string, stopSequence: string | undefined) => {
 
       if (response_so_far.includes('/* FILE: ')) {
         const regex = /\/\* FILE: (?<filename>[^\s]*?) \*\//g;
@@ -94,7 +93,8 @@ ${run_express_file_prompt}
 
       if (current_file) {
         streamFileHandler(stream, current_file, text);
-        generated_files[current_file] = response_so_far;
+        file_content_so_far += text;
+        generated_files[current_file] = file_content_so_far.replace(/\/\* FILE: [^\s]* \*\//gm, '');
       }
     }
 
@@ -109,14 +109,33 @@ ${run_express_file_prompt}
         content: `OK. print next file, if any. You can say /* FINISHED */ when done.`,
       });
 
-      if (response.text.includes('/* FINISHED */')) {
+      if (response.stopSequence?.includes('/* FINISHED')) {
         running = false;
       }
-      generator(appname, response.text);
+      file_saver(appname, response.text);
     } catch (e) {
       // console.error(e);
       console.log("(API down, retrying in 1s)");
       await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+  }
+
+  if(generated_files['package.json']) {
+    // remove /* FINISHED */ from package.json
+    try {
+      const package_json = JSON.parse(generated_files['package.json']);
+      package_json.dependencies['esbuild'] = 'latest';
+      package_json.dependencies['socket.io'] = 'latest';
+      package_json.dependencies['socket.io-client'] = 'latest';
+      package_json.dependencies['cookie-parser'] = 'latest';
+      package_json.dependencies['express'] = 'latest';
+      
+      generated_files['package.json'] = JSON.stringify(package_json, null, 4);
+      streamFileHandler(null, 'package.json', generated_files['package.json']);
+      console.log('package.json updated');
+      console.log(generated_files['package.json']);
+    } catch (e) {
+      console.error(e);
     }
   }
 
@@ -131,6 +150,8 @@ app.get("/robots.txt", (req, res) => {
     await Bun.write('generated_apps/' + appname + '/server/index.ts', default_server_index);
 
   }
+
+  streamFileHandler(null, 'server/run_express.ts', run_express_file);
 
 
   await Bun.write('generated_apps/' + appname + '/server/run_express.ts', run_express_file);

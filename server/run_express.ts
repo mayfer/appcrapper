@@ -59,55 +59,16 @@ server.listen(port, () => {
     const result = await esbuild.build({
         entryPoints: [path.join(folder, 'client/index.tsx')],
         outdir: path.join(folder, 'dist'),
-        bundle: true, // Assuming you want to bundle
+        bundle: true,
     });
 
-    // watch for changes in the client folder
-    // using fs tools
     fs.watch(path.join(folder, 'client'), { recursive: true }, async (event, filename) => {
 
         const result = await esbuild.build({
             entryPoints: [path.join(folder, 'client/index.tsx')],
             outdir: path.join(folder, 'dist'),
-            bundle: true, // Assuming you want to bundle
+            bundle: true,
         });
     });
-
-    if(result.errors.length > 0) {
-        console.error(result.errors);
-        return;
-    }
-    if(!result.outputFiles) {
-        console.error('No output files');
-        return;
-    }
-
-    // Assuming 'result.outputFiles' is what you want to map, following the esbuild 'write: false' behavior
-    const files = result.outputFiles.map(output => {
-        const basename: string = path.basename(output.path);
-        const ext: string = path.extname(basename).slice(1);
-
-        return {
-            path: output.path,
-            basename,
-            extension: ext,
-        };
-    });
-
-
-    const index_html_content = `<!doctype html>
-    <html>
-      ${files.filter(f => f.extension == 'css').map(f => `
-      <link rel="stylesheet" href="/dist/${f.basename}" />
-      `.trim()).join('\n')}
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <script type="module">
-        ${files.filter(f => f.extension == 'js').map(f => `import '/dist/${f.basename}';`).join('\n')}
-      </script>
-      <div id="root"></div>
-    </html>`;
-
-
-    await Bun.write(folder + '/server/index.html', index_html_content);
 
 })();
