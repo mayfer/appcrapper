@@ -138,8 +138,8 @@ function App() {
           <div>
             <p style={{ fontStyle: 'italic' }}>Enter your email to get notified when< br /> AppCrapper launches in the next few days.
             </p>
-            <input className="enter-email" type="email" placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
-            <button className="submit-email" onClick={() => {
+            <form onSubmit={(e) => {
+              e.preventDefault();
               fetch('/api/joinWaitlist', {
                 method: 'POST',
                 headers: {
@@ -154,8 +154,10 @@ function App() {
                 .catch((err) => {
                   alert('Error submitting email:', err);
                 });
-              setEmail('');
-            }}>Join waitlist</button>
+            }}>
+            <input className="enter-email" type="email" placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
+            <button className="submit-email" type="submit">Join waitlist</button>
+            </form>
 
             <img src="/client/depressed.svg" style={{ height: '50px', marginTop: '20px', }} alt="depressed" />
           </div>
