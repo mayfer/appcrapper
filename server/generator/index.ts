@@ -29,7 +29,7 @@ ${app_desc}
 - At the end of the file, write a comment marking it like so: /* END_FILE */
 - If there are no more files to write, mark it with /* END_APP */
 - Make sure all files are implemented.
-- Start with a README file that lists all routes and their descriptions.
+- Start with a README file that lists all routes and their descriptions. Also explain if database & socket.io are used or not (not all projects need them).
 - At the very end, generate a package.json file with all used libraries for both server and client. Don't specify version numbers, just use the latest version. Do NOT generate tsconfig.json.
 
 For this project, you will generate both backend and frontend code, both in TypeScript.
