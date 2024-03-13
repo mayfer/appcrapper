@@ -38,6 +38,7 @@ function App() {
   const [manuallyClickedFile, setManuallyClickedFile] = useState<boolean>(false);
   const [done, setDone] = useState<boolean>(false);
   const [inProgress, setInProgress] = useState<boolean>(false);
+  const [apiKey, setApiKey] = useState<string>('');
 
   const manuallyClickedFileRef = useRef(manuallyClickedFile);
 
@@ -97,6 +98,18 @@ function App() {
         AppCrapper.com
         <img src="/client/beta.png" style={{ height: '40px', position: 'relative', top: '10px', left: '10px' }} alt="beta" />
       </h1>
+      <div className="api-key-form">
+        <div>
+          This will generate a full-stack TypeScript app with express, react, sqlite, and socket.io in ~2 mins.
+        </div>
+        <p> Hopefully it will be ready to run, but no guarantees. </p>
+        <p>
+          You will need your own Antropic API key. <a href="https://console.anthropic.com/" target="_blank">https://console.anthropic.com/</a>.
+
+        </p>
+        <input type="text" className="api-key" placeholder="Enter your Antropic API key" value={apiKey} onChange={(e) => setApiKey(e.target.value)} />
+        <p><em>Make sure to delete the API key from your Antropic account when you're done.</em></p>
+      </div>
       <div className="form-container">
         <img src="/client/appcrapper.svg" alt="logo" />
 
@@ -110,6 +123,7 @@ function App() {
           <textarea
             placeholder="Enter app description"
             className="app-desc"
+            disabled={!apiKey || !appDesc}
             onChange={(e) => {
               setAppDesc(e.target.value);
             }}
@@ -117,6 +131,7 @@ function App() {
           {!inProgress && !done && (
             <button
               className="generate"
+              disabled={!apiKey || !appDesc}
               onClick={() => {
                 socket.emit('generate', { app_desc: appDesc });
                 setInProgress(true);

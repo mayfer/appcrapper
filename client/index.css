@@ -1,6 +1,7 @@
 
 body {
   padding: 40px;
+  min-height: 200vh;
 }
 
 .app {
@@ -79,7 +80,7 @@ button.generate {
 
 .main-title {
   font-size: 40px;
-  margin: 0 0 50px 0;
+  margin: 0;
   font-style: italic;
 }
 
@@ -108,4 +109,19 @@ button:focus {
   background-color: #eee;
   padding: 2px 4px;
 ;
+}
+
+.api-key-form {
+  background-color: #ddd;
+  box-sizing: border-box;
+  padding: 10px;
+  max-width: 580px;
+  margin: 20px 0 40px 0;
+}
+
+.api-key {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  border: 1px solid #000;
 }
