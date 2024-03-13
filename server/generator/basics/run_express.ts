@@ -14,9 +14,6 @@ export const io = new Server(server);
 app.use(express.json());
 app.use(cookieParser());
 
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
-});
 app.get('/client/:file', (req, res) => {
     const filepath = path.join(__dirname, '../client', req.params.file);
     res.sendFile(filepath);
@@ -25,6 +22,9 @@ app.get('/dist/:file', (req, res) => {
     const filepath = path.join(__dirname, '../dist', req.params.file);
     res.sendFile(filepath);
 })
+app.get('/*', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+});
 
 const port = process.env.PORT || 8001;
 server.listen(port, () => {

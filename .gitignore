@@ -178,3 +178,4 @@ dist
 /server/credentials
 /generated_apps
 /bun.lockb
+/db.sqlite

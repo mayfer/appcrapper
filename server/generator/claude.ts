@@ -2,17 +2,15 @@ import Anthropic from '@anthropic-ai/sdk';
 import getCredentials from '../credentials';
 import { Line, Prompt, Completion } from './interfaces';
 
-const apiKey = getCredentials('claude', 'api_key');
-
-const anthropic = new Anthropic({
-    apiKey, // defaults to process.env["ANTHROPIC_API_KEY"]
-});
+// const apiKey = getCredentials('claude', 'api_key');
 
 
-
-export async function stream(prompt: Prompt, streamHandler?: (stream: any, text: string, stopSequence?: string) => void) : Promise<Completion> {
+export async function stream(prompt: Prompt, api_key: string, streamHandler?: (stream: any, text: string, stopSequence?: string) => void) : Promise<Completion> {
     const messages: Anthropic.MessageParam[] = prompt.lines as Anthropic.MessageParam[];
 
+    const anthropic = new Anthropic({
+        apiKey: api_key, // defaults to process.env["ANTHROPIC_API_KEY"]
+    });
     //stream.controller.abort()
 
     const stream = await anthropic.messages.create({

@@ -38,7 +38,19 @@ function App() {
   const [manuallyClickedFile, setManuallyClickedFile] = useState<boolean>(false);
   const [done, setDone] = useState<boolean>(false);
   const [inProgress, setInProgress] = useState<boolean>(false);
+
   const [apiKey, setApiKey] = useState<string>('');
+
+  const [email, setEmail] = useState<string>('');
+  const [emailSent, setEmailSent] = useState<boolean>(false);
+
+  const saveApiKey = (apiKey: string) => {
+    setApiKey(apiKey);
+    localStorage.setItem('apiKey', apiKey);
+  };
+  const getApiKey = () => {
+    return localStorage.getItem('apiKey');
+  };
 
   const manuallyClickedFileRef = useRef(manuallyClickedFile);
 
@@ -48,6 +60,11 @@ function App() {
   }, [manuallyClickedFile]);
 
   useEffect(() => {
+    // load api key from local storage
+    const apiKeyFromLocalStorage = getApiKey();
+    if (apiKeyFromLocalStorage) {
+      setApiKey(apiKeyFromLocalStorage);
+    }
     socket.on('file-chunk', (fileChunk: FileChunk) => {
       const filename = fileChunk.relativePath;
       setFiles((prevFiles) => ({
@@ -99,16 +116,16 @@ function App() {
         <img src="/client/beta.png" style={{ height: '40px', position: 'relative', top: '10px', left: '10px' }} alt="beta" />
       </h1>
       <div className="api-key-form">
-        <div>
-          This will generate a full-stack TypeScript app with express, react, sqlite, and socket.io in ~2 mins.
-        </div>
-        <p> Hopefully it will be ready to run, but no guarantees. </p>
+        <p>
+          This generates <b>full-stack TypeScript</b> apps with express, react, sqlite, and socket.io in ~2 mins.
+        </p>
+        <p> Hopefully it will be ready to run (with <a href="https://bun.sh" target="_blank">bun</a>), but no guarantees.<br />Try rewording your prompt to get alterantive versions.</p>
         <p>
           You will need your own Antropic API key. <a href="https://console.anthropic.com/" target="_blank">https://console.anthropic.com/</a>.
 
         </p>
-        <input type="text" className="api-key" placeholder="Enter your Antropic API key" value={apiKey} onChange={(e) => setApiKey(e.target.value)} />
-        <p><em>Make sure to delete the API key from your Antropic account when you're done.</em></p>
+        <input type="text" className="api-key" placeholder="sk-ant-api03-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" value={apiKey} onChange={(e) => saveApiKey(e.target.value)} />
+        <p><em>Make sure to <b>delete the API key</b> from your Antropic account when you're done.</em></p>
       </div>
       <div className="form-container">
         <img src="/client/appcrapper.svg" alt="logo" />
@@ -123,7 +140,8 @@ function App() {
           <textarea
             placeholder="Enter app description"
             className="app-desc"
-            disabled={!apiKey || !appDesc}
+
+            disabled={!apiKey || inProgress || done}
             onChange={(e) => {
               setAppDesc(e.target.value);
             }}
@@ -131,9 +149,9 @@ function App() {
           {!inProgress && !done && (
             <button
               className="generate"
-              disabled={!apiKey || !appDesc}
+              disabled={!apiKey || !appDesc || inProgress || done}
               onClick={() => {
-                socket.emit('generate', { app_desc: appDesc });
+                socket.emit('generate', { app_desc: appDesc, api_key: apiKey });
                 setInProgress(true);
               }}
             >
@@ -142,6 +160,47 @@ function App() {
           )}
         </div>
       </div>
+
+      {false && (
+        <div className="wait-list">
+
+          {!emailSent && (
+            <div>
+              <p style={{ fontStyle: 'italic' }}>Enter your email to get notified when< br /> AppCrapper launches in the next few days.
+              </p>
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                fetch('/api/joinWaitlist', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ email }),
+                })
+                  .then(() => {
+
+                    setEmailSent(true);
+                  })
+                  .catch((err) => {
+                    alert('Error submitting email:', err);
+                  });
+              }}>
+              <input className="enter-email" type="email" placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
+              <button className="submit-email" type="submit">Join waitlist</button>
+              </form>
+
+              <img src="/client/depressed.svg" style={{ height: '50px', marginTop: '20px', }} alt="depressed" />
+            </div>
+          )}
+
+          {emailSent && (
+            <div>
+              <p style={{ fontStyle: 'italic' }}>OK you are on the waitlist, {email}.</p>
+              <img src="/client/carrot.svg" style={{ height: '250px', marginTop: '20px', }} alt="happy" />
+            </div>
+          )}
+        </div>
+      )}
       
       {(inProgress || done) && (
         <div>
@@ -156,7 +215,10 @@ function App() {
             )}
             {done && (
               <div className='done'>
-                Done! <a href="#" className="download" onClick={e => {createAndDownloadZip(files)}}>Download .zip file</a>
+                Done! <a href="#" className="download" onClick={e => {
+                  e.preventDefault();
+                  createAndDownloadZip(files)
+                }}>Download .zip file</a>
                 <div style={{ color: '#aaa' }}>
                   Disclaimer: it may work, it may not work.
                 </div>
@@ -165,7 +227,7 @@ function App() {
                     <li>Unzip the file</li>
                     <li>Install <a href="https://bun.sh/" target="_blank">bun</a></li>
                     <li>Run <code>bun i && bun --watch server/index.ts</code> from the folder</li>
-                    <li>Open <a href="http://localhost:8000" target="_blank">http://localhost:8000</a></li>
+                    <li>Open <a href="http://localhost:8001" target="_blank">http://localhost:8001</a></li>
                   </ul>
                 </div>
               </div>

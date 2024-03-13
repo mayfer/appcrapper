@@ -4,7 +4,12 @@ import path from 'path';
 import { app, io } from './run_express';
 import { FileInfo, FileChunk } from '../shared/types';
 import generate from './generator';
+import { addToWaitlist } from './db';
 
+app.post('/api/joinWaitlist', (req, res) => {
+  addToWaitlist(req.body.email);
+  res.send('OK');
+});
 
 const filesDir = path.join(__dirname, '../generated_apps/app-w90fgo/');
 function getFileInfos(dir: string): FileInfo[] {
@@ -55,11 +60,13 @@ io.on('connection', (socket) => {
   //   }
   // });
 
-  socket.on('generate', async ({app_desc} : {app_desc: string}) => {
+  socket.on('generate', async ({app_desc, api_key} : {app_desc: string, api_key: string}) => {
 
-    await generate(app_desc, (stream: any, filename: string, text: string, replace?: boolean) => {
+    const app_id = Math.random().toString(36).substring(2, 8);
+
+    await generate(app_id, app_desc, api_key, (stream: any, filename: string, text: string, replace?: boolean) => {
       const fileChunk: FileChunk = {
-        // path: filename,
+
         relativePath: filename,
         chunk: text,
       };
