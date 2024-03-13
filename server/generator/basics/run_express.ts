@@ -26,7 +26,7 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 
-/* running the http server is handled here. it does not need to be ran again */
+/* THIS ALREADY STARTED THE HTTP SERVER ON PORT 8001, DO NOT RUN IT AGAIN */
 const port = process.env.PORT || 8001;
 server.listen(port, () => {
     console.log('Server is running on port ' + port);

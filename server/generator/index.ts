@@ -19,7 +19,10 @@ export default async function generate(app_id: string, app_desc: string, api_key
 
 You generate full working software by defining each file labelled with its file path. All functions must be fully implemented. The answer will be long and complete.
         
-Please generate the following app: ${app_desc}
+Here is the requested app description:
+<user_app_desc>
+${app_desc}
+</user_app_desc>
 
 - You must not respond with speech, just start printing file contents
 - Before each file, write a comment formatted like this wrapped with forward slash and star: /* FILE: path/to/file.js */
@@ -44,7 +47,7 @@ The react root should attach to <div id="root"></div>. You don't need to provide
 
 The app should be ready to run, complete with all functionality.
 
-The server is already running on port 8001 with express and socket.io.
+The server is already running on port 8001 with express (and socket.io, in case you need it).
 /* FILE: ./server/run_express.ts */
 
 ${run_express_file_prompt}

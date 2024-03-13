@@ -30,6 +30,9 @@ body {
 .file-item:hover {
   border: 1px solid #eee;
 }
+.file-item.selected:hover {
+  border: 1px solid #000;
+}
 .file-item:active {
   border: 1px solid #000;
 }
