@@ -3,7 +3,7 @@ import { Prompt, Line } from './interfaces';
 import file_saver from './file_saver';
 import path from 'path';
 import fs from 'fs';
-
+import { addFile } from '../db';
 
 export default async function generate(app_id: string, app_desc: string, api_key: string, streamFileHandler: (stream: any, filename: string, text: string, replace?: boolean) => void) {
 
@@ -121,10 +121,12 @@ ${run_express_file_prompt}
       package_json.dependencies['socket.io-client'] = 'latest';
       package_json.dependencies['cookie-parser'] = 'latest';
       package_json.dependencies['express'] = 'latest';
+
+      package_json.scripts['dev'] = 'bun i && bun --watch server/index.ts';
       
       generated_files['package.json'] = JSON.stringify(package_json, null, 4);
       streamFileHandler(null, 'package.json', generated_files['package.json'], true);
-      console.log('package.json updated');
+      // console.log('package.json updated');
       console.log(generated_files['package.json']);
     } catch (e) {
       console.error(e);
@@ -140,13 +142,13 @@ app.get("/robots.txt", (req, res) => {
   `.trim();
     streamFileHandler(null, 'server/index.ts', default_server_index);
     await Bun.write('generated_apps/' + appname + '/server/index.ts', default_server_index);
-
+    generated_files['server/index.ts'] = default_server_index;
   }
 
   streamFileHandler(null, 'server/run_express.ts', run_express_file);
-
-
   await Bun.write('generated_apps/' + appname + '/server/run_express.ts', run_express_file);
+  generated_files['server/run_express.ts'] = run_express_file;
+
   const folder = path.join(__dirname, '../../generated_apps/', appname);
   const client_entry = fs.existsSync(path.join(folder, 'client/index.tsx')) ? 'client/index.tsx' : 'client/index.ts';
   
@@ -186,9 +188,12 @@ app.get("/robots.txt", (req, res) => {
 
   streamFileHandler(null, 'index.html', index_html_content);
   await Bun.write('generated_apps/' + appname + '/server/index.html', index_html_content);
+  generated_files['server/index.html'] = index_html_content;
 
-  // console.log(`\nDone. "bun generated_apps/${appname}/server/index.ts" to start the server.`);
-
+  for (const generated_file of Object.keys(generated_files)) {
+    const file_content = generated_files[generated_file];
+    addFile(app_id, generated_file, file_content);
+  }
 
 };
 

@@ -117,11 +117,11 @@ function App() {
       </h1>
       <div className="api-key-form">
         <p>
-          This generates <b>full-stack TypeScript</b> apps with express, react, sqlite, and socket.io in ~2 mins.
+          This generates <b>full-stack TypeScript</b> apps with express, react, sqlite, and socket.io in ~2 mins. An experiment by <a href="https://twitter.com/mayfer" target="_blank">Murat</a>.
         </p>
-        <p> Hopefully it will be ready to run (with <a href="https://bun.sh" target="_blank">bun</a>), but no guarantees.<br />Try rewording your prompt to get alterantive versions.</p>
+        <p> Hopefully your .zip file will be ready to run (with <a href="https://bun.sh" target="_blank">bun</a>), but no guarantees.<br />Try rewording your prompt to get alterantive versions.</p>
         <p>
-          You will need your own Antropic API key. <a href="https://console.anthropic.com/" target="_blank">https://console.anthropic.com/</a>.
+          You will need your own Antropic API key from <a href="https://console.anthropic.com/" target="_blank">https://console.anthropic.com/</a>.
 
         </p>
         <input type="text" className="api-key" placeholder="sk-ant-api03-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" value={apiKey} onChange={(e) => saveApiKey(e.target.value)} />
@@ -226,7 +226,7 @@ function App() {
                   <ul>
                     <li>Unzip the file</li>
                     <li>Install <a href="https://bun.sh/" target="_blank">bun</a></li>
-                    <li>Run <code>bun i && bun --watch server/index.ts</code> from the folder</li>
+                    <li>Run <code>bun run dev</code> from the folder</li>
                     <li>Open <a href="http://localhost:8001" target="_blank">http://localhost:8001</a></li>
                   </ul>
                 </div>

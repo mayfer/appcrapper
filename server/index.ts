@@ -4,7 +4,7 @@ import path from 'path';
 import { app, io } from './run_express';
 import { FileInfo, FileChunk } from '../shared/types';
 import generate from './generator';
-import { addToWaitlist } from './db';
+import { addToWaitlist, addApp, addFile } from './db'
 
 app.post('/api/joinWaitlist', (req, res) => {
   addToWaitlist(req.body.email);
@@ -64,7 +64,12 @@ io.on('connection', (socket) => {
 
     const app_id = Math.random().toString(36).substring(2, 8);
 
+    addApp(app_id, app_desc);
+
     await generate(app_id, app_desc, api_key, (stream: any, filename: string, text: string, replace?: boolean) => {
+      const dateTimeString = new Date().toLocaleString([], { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+
+      console.log(`Generating ${app_id} at ${dateTimeString}`);
       const fileChunk: FileChunk = {
 
         relativePath: filename,

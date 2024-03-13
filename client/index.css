@@ -141,7 +141,7 @@ button:disabled {
   background-color: #ddd;
   box-sizing: border-box;
   padding: 0 15px;
-  max-width: 580px;
+  max-width: 620px;
   margin: 20px 0 40px 0;
   border: 10px solid #eee;
 }

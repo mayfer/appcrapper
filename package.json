@@ -2,6 +2,10 @@
   "name": "appcrapper",
   "module": "index.ts",
   "type": "module",
+  "scripts": {
+    "dev": "bun --watch server/index.ts",
+    "start": "bun server/index.ts"
+  },
   "devDependencies": {
     "@types/bun": "latest",
     "@types/file-saver": "^2.0.7"

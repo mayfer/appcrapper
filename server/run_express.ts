@@ -18,7 +18,7 @@ app.get('/', (req, res) => {
     res.send(`<!doctype html>
     <html>
       <link rel="stylesheet" href="/dist/index.css" />
-      <meta name="viewport" content="width=800px, initial-scale=1" />
+      <meta name="viewport" content="width=800, initial-scale=1" />
       <script type="module">
         import '/dist/index.js';
       </script>
