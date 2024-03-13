@@ -61,6 +61,8 @@ ${run_express_file_prompt}
 
   const generated_files: { [path: string]: string } = {};
 
+  let loop_counter = 0;
+
   while (running) {
     let response_so_far = '';
     let file_content_so_far = '';
@@ -106,9 +108,24 @@ ${run_express_file_prompt}
       }
       file_saver(appname, response.text);
     } catch (e) {
-      // console.error(e);
+      console.error(e);
+      if(e.message.includes('invalid x-api-key')) {
+        return {
+          success: false,
+          message: 'Invalid API key',
+        }
+      }
       console.log("(API down, retrying in 1s)");
       await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+
+    loop_counter++;
+    if(loop_counter > 50) {
+      console.log('Too many loops, giving up');
+      return {
+        success: false,
+        message: 'Too many loops, giving up',
+      };
     }
   }
 
@@ -127,7 +144,7 @@ ${run_express_file_prompt}
       generated_files['package.json'] = JSON.stringify(package_json, null, 4);
       streamFileHandler(null, 'package.json', generated_files['package.json'], true);
       // console.log('package.json updated');
-      console.log(generated_files['package.json']);
+      // console.log(generated_files['package.json']);
     } catch (e) {
       console.error(e);
     }
@@ -195,6 +212,10 @@ app.get("/robots.txt", (req, res) => {
     addFile(app_id, generated_file, file_content);
   }
 
+  return {
+    success: true,
+    message: 'App generated successfully',
+  };
 };
 
 

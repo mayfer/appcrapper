@@ -44,6 +44,8 @@ function App() {
   const [email, setEmail] = useState<string>('');
   const [emailSent, setEmailSent] = useState<boolean>(false);
 
+  const [error, setError] = useState<string>('');
+
   const saveApiKey = (apiKey: string) => {
     setApiKey(apiKey);
     localStorage.setItem('apiKey', apiKey);
@@ -93,6 +95,18 @@ function App() {
       setDone(true);
       setInProgress(false);
     });
+
+    socket.on('error', (message: string) => {
+      setInProgress(false);
+      setDone(false);
+      setError(message);
+    });
+
+    socket.on('disconnect', () => {
+      setInProgress(false);
+      setDone(false);
+      setError('Disconnected from server. App crapped out.');
+    });
   }, []);
 
   const extension: string = selectedFile ? selectedFile.split('.').pop()! : '';
@@ -140,7 +154,6 @@ function App() {
           <textarea
             placeholder="Enter app description"
             className="app-desc"
-
             disabled={!apiKey || inProgress || done}
             onChange={(e) => {
               setAppDesc(e.target.value);
@@ -151,6 +164,8 @@ function App() {
               className="generate"
               disabled={!apiKey || !appDesc || inProgress || done}
               onClick={() => {
+                setFiles({});
+                setError('');
                 socket.emit('generate', { app_desc: appDesc, api_key: apiKey });
                 setInProgress(true);
               }}
@@ -202,7 +217,7 @@ function App() {
         </div>
       )}
       
-      {(inProgress || done) && (
+      {(inProgress || done || error) && (
         <div>
           <div className="status">
             {inProgress && (
@@ -232,6 +247,11 @@ function App() {
                 </div>
               </div>
             )} 
+            {error && (
+              <div className='error'>
+                Error: {error}
+              </div>
+            )}
           </div>
 
           <div className="app">

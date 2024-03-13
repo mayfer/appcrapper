@@ -64,12 +64,12 @@ io.on('connection', (socket) => {
 
     const app_id = Math.random().toString(36).substring(2, 8);
 
+    const dateTimeString = new Date().toLocaleString([], { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+    console.log(`Generating ${app_id} at ${dateTimeString}`);
     addApp(app_id, app_desc);
 
-    await generate(app_id, app_desc, api_key, (stream: any, filename: string, text: string, replace?: boolean) => {
-      const dateTimeString = new Date().toLocaleString([], { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+    let result = await generate(app_id, app_desc, api_key, (stream: any, filename: string, text: string, replace?: boolean) => {
 
-      console.log(`Generating ${app_id} at ${dateTimeString}`);
       const fileChunk: FileChunk = {
 
         relativePath: filename,
@@ -82,7 +82,12 @@ io.on('connection', (socket) => {
       }
     });
 
-    socket.emit('done');
+    if(!result.success) {
+      // console.error(result.message);
+      socket.emit('error', result.message);
+    } else {
+      socket.emit('done');
+    }
   });
 
 });

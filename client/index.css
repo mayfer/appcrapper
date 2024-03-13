@@ -107,6 +107,10 @@ button.generate:disabled:hover {
   border: 5px solid #0f0;
   padding: 10px 20px;
 }
+.error {
+  border: 5px solid #f00;
+  padding: 10px 20px;
+}
 
 .download {
   font-weight: bold;
