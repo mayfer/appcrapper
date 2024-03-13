@@ -22,7 +22,7 @@ app.get('/dist/:file', (req, res) => {
     const filepath = path.join(__dirname, '../dist', req.params.file);
     res.sendFile(filepath);
 })
-app.get('/*', (req, res) => {
+app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 
