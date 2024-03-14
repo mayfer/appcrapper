@@ -117,6 +117,11 @@ ${run_express_file_prompt}
           success: false,
           message: 'Invalid API key',
         }
+      } else if(e.message.includes('credit balance')) {
+        return {
+          success: false,
+          message: 'Credit balance too low',
+        }
       }
       console.log("(API down, retrying in 1s)");
       await new Promise((resolve) => setTimeout(resolve, 1000));
